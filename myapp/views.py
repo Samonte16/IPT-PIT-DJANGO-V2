@@ -248,7 +248,6 @@ def forgot_password_view(request):
     else:
         return JsonResponse({'message': 'Invalid request method'}, status=400)
 
-
     
 @csrf_exempt
 def admin_forgot_password_view(request):
