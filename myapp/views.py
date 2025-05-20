@@ -35,10 +35,10 @@ def signup_view(request):
         password = data.get('password')
 
         if not (full_name and gender and age and phone and email and password):
-            return JsonResponse({'error': 'Missing fields'}, status=400)
+            return JsonResponse({'message': 'Missing fields'}, status=400)
 
         if User.objects.filter(email=email).exists():
-            return JsonResponse({'error': 'Email already exists'}, status=400)
+            return JsonResponse({'message': 'Email already exists'}, status=400)
 
         hashed_password = make_password(password)
 
@@ -55,12 +55,12 @@ def signup_view(request):
         try:
             send_verification_email(email, full_name, verification_link)
         except Exception as e:
-            return JsonResponse({'error': f'Email sending failed: {str(e)}'}, status=500)
+            return JsonResponse({'message': f'Email sending failed: {str(e)}'}, status=500)
 
 
         return JsonResponse({'message': 'User created successfully. Please check your email to verify your account.'}, status=201)
     else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
+        return JsonResponse({'message': 'Invalid request method'}, status=400)
 
 def verify_email(request, token):
     try:
@@ -71,7 +71,7 @@ def verify_email(request, token):
         user.save()
         return JsonResponse({'message': 'Email verified successfully! You can now log in.'}, status=200)
     except User.DoesNotExist:
-        return JsonResponse({'error': 'Invalid or expired token.'}, status=400)
+        return JsonResponse({'message': 'Invalid or expired token.'}, status=400)
 
 @csrf_exempt
 def signin_view(request):
@@ -82,22 +82,22 @@ def signin_view(request):
         password = data.get('password')
 
         if not (email and password):
-            return JsonResponse({'error': 'Missing email or password'}, status=400)
+            return JsonResponse({'message': 'Missing email or password'}, status=400)
 
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return JsonResponse({'error': 'User does not exist'}, status=400)
+            return JsonResponse({'message': 'User does not exist'}, status=400)
 
         if not user.is_active:
-            return JsonResponse({'error': 'Account not verified. Please check your email.'}, status=403)
+            return JsonResponse({'message': 'Account not verified. Please check your email.'}, status=403)
 
         if check_password(password, user.password):
             return JsonResponse({'message': 'Login successful','full_name': user.full_name}, status=200) 
         else:
-            return JsonResponse({'error': 'Invalid password'}, status=400)
+            return JsonResponse({'message': 'Invalid password'}, status=400)
     else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
+        return JsonResponse({'message': 'Invalid request method'}, status=400)
 
 @csrf_exempt
 def admin_register_view(request):
@@ -111,10 +111,10 @@ def admin_register_view(request):
         password = data.get('password')
 
         if not (full_name and gender and age and email and password):
-            return JsonResponse({'error': 'Missing fields'}, status=400)
+            return JsonResponse({'message': 'Missing fields'}, status=400)
 
         if Admin.objects.filter(email=email).exists():
-            return JsonResponse({'error': 'Email already exists'}, status=400)
+            return JsonResponse({'message': 'Email already exists'}, status=400)
 
         hashed_password = make_password(password)
 
@@ -130,11 +130,11 @@ def admin_register_view(request):
         try:
             send_verification_email(email, full_name, verification_link)
         except Exception as e:
-            return JsonResponse({'error': f'Email sending failed: {str(e)}'}, status=500)
+            return JsonResponse({'message': f'Email sending failed: {str(e)}'}, status=500)
 
         return JsonResponse({'message': 'Admin registered successfully. Please check your email to verify your account.'}, status=201)
     else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
+        return JsonResponse({'message': 'Invalid request method'}, status=400)
 
 def admin_verify_email(request, token):
     try:
@@ -145,7 +145,7 @@ def admin_verify_email(request, token):
         admin.save()
         return JsonResponse({'message': 'Admin email verified successfully! You can now log in.'}, status=200)
     except Admin.DoesNotExist:
-        return JsonResponse({'error': 'Invalid or expired token.'}, status=400)
+        return JsonResponse({'message': 'Invalid or expired token.'}, status=400)
 
 @csrf_exempt
 def admin_login_view(request):
@@ -156,30 +156,27 @@ def admin_login_view(request):
         password = data.get('password')
 
         if not (email and password):
-            return JsonResponse({'error': 'Missing email or password'}, status=400)
+            return JsonResponse({'message': 'Missing email or password'}, status=400)
 
         try:
             admin = Admin.objects.get(email=email)
         except Admin.DoesNotExist:
-            return JsonResponse({'error': 'Admin does not exist'}, status=400)
+            return JsonResponse({'message': 'Admin does not exist'}, status=400)
 
         if not admin.is_active:
-            return JsonResponse({'error': 'Account not verified. Please check your email.'}, status=403)
+            return JsonResponse({'message': 'Account not verified. Please check your email.'}, status=403)
 
         if check_password(password, admin.password):
             return JsonResponse({'message': 'Admin login successful', 'admin_name': admin.full_name}, status=200)
         else:
-            return JsonResponse({'error': 'Invalid password'}, status=400)
+            return JsonResponse({'message': 'Invalid password'}, status=400)
     else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
+        return JsonResponse({'message': 'Invalid request method'}, status=400)
 
 
 def verified_users_view(request):
     verified_users = User.objects.filter(is_active=True).values('full_name', 'email', 'age', 'gender', 'phone')
     return JsonResponse({'verified_users': list(verified_users)}, safe=False)
-
-@csrf_exempt
-def forgot_password_view(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         email = data.get('email')
@@ -187,15 +184,15 @@ def forgot_password_view(request):
         new_password = data.get('new_password')
 
         if not (email and old_password and new_password):
-            return JsonResponse({'error': 'Missing fields'}, status=400)
+            return JsonResponse({'message': 'Missing fields'}, status=400)
 
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return JsonResponse({'error': 'User not found'}, status=404)
+            return JsonResponse({'message': 'User not found'}, status=404)
 
         if not check_password(old_password, user.password):
-            return JsonResponse({'error': 'Old password is incorrect'}, status=400)
+            return JsonResponse({'message': 'Old password is incorrect'}, status=400)
 
         user.password = make_password(new_password)
         user.save()
@@ -211,7 +208,7 @@ def forgot_password_view(request):
 
         return JsonResponse({'message': 'Password changed successfully.'}, status=200)
     else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
+        return JsonResponse({'message': 'Invalid request method'}, status=400)
     
 @csrf_exempt
 def forgot_password_view(request):
@@ -222,18 +219,18 @@ def forgot_password_view(request):
         new_password = data.get('new_password')
 
         if not (email and old_password and new_password):
-            return JsonResponse({'error': 'Missing fields'}, status=400)
+            return JsonResponse({'message': 'Missing fields'}, status=400)
 
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return JsonResponse({'error': 'User not found'}, status=404)
+            return JsonResponse({'message': 'User not found'}, status=404)
 
         if not check_password(old_password, user.password):
-            return JsonResponse({'error': 'Old password is incorrect'}, status=400)
+            return JsonResponse({'message': 'Old password is incorrect'}, status=400)
 
         if old_password == new_password:
-            return JsonResponse({'error': 'New password must be different from old password.'}, status=400)
+            return JsonResponse({'message': 'New password must be different from old password.'}, status=400)
 
         user.password = make_password(new_password)
         user.save()
@@ -249,7 +246,7 @@ def forgot_password_view(request):
 
         return JsonResponse({'message': 'Password changed successfully.'}, status=200)
     else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
+        return JsonResponse({'message': 'Invalid request method'}, status=400)
 
 
     
@@ -262,18 +259,18 @@ def admin_forgot_password_view(request):
         new_password = data.get('new_password')
 
         if not (email and old_password and new_password):
-            return JsonResponse({'error': 'Missing fields'}, status=400)
+            return JsonResponse({'message': 'Missing fields'}, status=400)
 
         try:
             admin = Admin.objects.get(email=email)
         except Admin.DoesNotExist:
-            return JsonResponse({'error': 'Admin not found'}, status=404)
+            return JsonResponse({'message': 'Admin not found'}, status=404)
 
         if not check_password(old_password, admin.password):
-            return JsonResponse({'error': 'Old password is incorrect'}, status=400)
+            return JsonResponse({'message': 'Old password is incorrect'}, status=400)
 
         if old_password == new_password:
-            return JsonResponse({'error': 'New password must be different from old password.'}, status=400)
+            return JsonResponse({'message': 'New password must be different from old password.'}, status=400)
 
         admin.password = make_password(new_password)
         admin.save()
@@ -289,6 +286,6 @@ def admin_forgot_password_view(request):
 
         return JsonResponse({'message': 'Admin password changed successfully.'}, status=200)
     else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
+        return JsonResponse({'message': 'Invalid request method'}, status=400)
 
 
