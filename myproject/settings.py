@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv('django-insecure-l%7=vew73dn9zbbb@k=&3ag=(_8tb7l*3v^_7m3@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['https://ipt-pit-django-v2.onrender.com']
+ALLOWED_HOSTS = ['ipt-pit-django-v2.onrender.com']
 
 
 # Application definition
