@@ -51,7 +51,7 @@ def signup_view(request):
             password=hashed_password
         )
 
-        verification_link = f"http://192.168.1.44:8000/api/verify-email/{user.verification_token}/"
+        verification_link = f"https://ipt-pit-django-v2.onrender.com/api/verify-email/{user.verification_token}/"
         send_verification_email(email, full_name, verification_link)
 
         return JsonResponse({'message': 'User created successfully. Please check your email to verify your account.'}, status=201)
@@ -122,7 +122,7 @@ def admin_register_view(request):
             password=hashed_password
         )
 
-        verification_link = f"http://192.168.1.44:8000/api/admin-verify-email/{admin.verification_token}/"
+        verification_link = f"https://ipt-pit-django-v2.onrender.com/api/admin-verify-email/{admin.verification_token}/"
         send_verification_email(email, full_name, verification_link, is_admin=True)
 
         return JsonResponse({'message': 'Admin registered successfully. Please check your email to verify your account.'}, status=201)

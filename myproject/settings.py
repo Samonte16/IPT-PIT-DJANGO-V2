@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-l%7=vew73dn9zbbb@k=&3ag=(_8tb7l*3v^_7m3@fy(&mpqf=2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'your-backend-service-name.onrender.com', '192.168.1.44' ]
+ALLOWED_HOSTS = ['ipt-pit-django-v2.onrender.com']
 
 
 # Application definition
