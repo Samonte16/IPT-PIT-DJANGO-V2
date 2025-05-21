@@ -7,7 +7,6 @@ from django.conf import settings
 from .models import User, Admin
 import json
 
-# 📧 Reusable email sending function
 def send_verification_email(recipient_email, full_name, verification_link, is_admin=False):
     subject = 'Verify Your Admin Account' if is_admin else 'Verify Your Email Address'
     template = 'emails/admin_verify_email.html' if is_admin else 'emails/verify_email.html'
